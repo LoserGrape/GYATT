@@ -1,0 +1,7 @@
+local args = {
+  [1] = {
+     ["finished"] = true
+  }
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Homerun"):FireServer(unpack(args))
