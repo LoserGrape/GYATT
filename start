@@ -1,7 +1,34 @@
-local args = {
-  [1] = {
-     ["start"] = true
-  }
-}
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-game:GetService("ReplicatedStorage"):WaitForChild("Homerun"):FireServer(unpack(args))
+-- Set respawn time to 0
+Players.RespawnTime = 0
+
+local function respawnAndTeleport()
+    while true do
+        local character = player.Character
+        if character then
+            local currentPosition
+            
+            -- Update position before dying
+            character.Humanoid.Died:Connect(function()
+                currentPosition = character.HumanoidRootPart.Position
+            end)
+            
+            -- Kill the character
+            character.Humanoid.Health = 0
+            
+            -- Listen for the character to be added (respawned)
+            player.CharacterAdded:Wait()  -- Wait for the new character to be added
+            local newCharacter = player.Character
+            -- Wait for the character to load
+            newCharacter:WaitForChild("HumanoidRootPart")
+            wait(0.1)  -- Wait for 0.1 seconds
+            newCharacter.HumanoidRootPart.CFrame = CFrame.new(currentPosition)
+        end
+        wait(1) -- Add a delay between iterations to prevent potential issues
+    end
+end
+
+-- Start the loop
+respawnAndTeleport()
